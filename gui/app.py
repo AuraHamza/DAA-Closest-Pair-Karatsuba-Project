@@ -1387,11 +1387,9 @@ class AlgorithmAnalyzer:
                      font=("Segoe UI", 9), fg=C["gold"],
                      bg=C["panel_light"]).pack(side="right", padx=12)
 
-
 # ============================================================
 # APPLICATION ENTRY POINT
 # ============================================================
-
 def main():
     root = tk.Tk()
     AlgorithmAnalyzer(root)
