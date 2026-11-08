@@ -1,4 +1,3 @@
-
 import os
 import csv
 import time
@@ -10,20 +9,18 @@ with redirect_stdout(io.StringIO()):
     from algorithms.closest_pair import closest_pair
     from algorithms.integer_multiplication import karatsuba_multiply
 
-
 CLOSEST_PAIR_FOLDER = "datasets/closest_pair"
 INTEGER_MULTIPLICATION_FOLDER = "datasets/integer_multiplication"
 RESULTS_FOLDER = "results"
 
-
 def run_closest_pair_experiments():
 
-    filename = os.path.join(RESULTS_FOLDER, "closest_pair_results.csv")
-
+    filename = os.path.join(
+        RESULTS_FOLDER,
+        "closest_pair_results.csv"
+    )
     with open(filename, "w", newline="") as file:
-
         writer = csv.writer(file)
-
         writer.writerow([
             "Dataset",
             "Input Size",
@@ -31,22 +28,33 @@ def run_closest_pair_experiments():
             "Closest Pair",
             "Minimum Distance"
         ])
-
         for name in sorted(os.listdir(CLOSEST_PAIR_FOLDER)):
-
             if name.endswith(".txt"):
-
                 filepath = os.path.join(CLOSEST_PAIR_FOLDER, name)
 
                 with open(filepath, "r") as dataset:
 
-                    size = int(dataset.readline())
+                    size = int(dataset.readline().strip())
 
                     points = []
 
                     for line in dataset:
-                        x, y = map(int, line.split())
-                        points.append((x, y))
+
+                        if line.strip():
+
+                            x, y = map(float, line.split())
+
+                            points.append((x, y))
+
+                if len(points) != size:
+                    raise ValueError(
+                        "Point count mismatch in " + name
+                    )
+
+                if len(points) < 2:
+                    raise ValueError(
+                        "At least two points are required in " + name
+                    )
 
                 start_time = time.perf_counter()
 
@@ -75,7 +83,10 @@ def run_closest_pair_experiments():
 
 def run_integer_multiplication_experiments():
 
-    filename = os.path.join(RESULTS_FOLDER, "integer_multiplication_results.csv")
+    filename = os.path.join(
+        RESULTS_FOLDER,
+        "integer_multiplication_results.csv"
+    )
 
     with open(filename, "w", newline="") as file:
 
@@ -93,7 +104,10 @@ def run_integer_multiplication_experiments():
 
             if name.endswith(".txt"):
 
-                filepath = os.path.join(INTEGER_MULTIPLICATION_FOLDER, name)
+                filepath = os.path.join(
+                    INTEGER_MULTIPLICATION_FOLDER,
+                    name
+                )
 
                 with open(filepath, "r") as dataset:
 
@@ -130,17 +144,11 @@ def run_integer_multiplication_experiments():
 
 
 def main():
-
     os.makedirs(RESULTS_FOLDER, exist_ok=True)
-
     print("Starting Closest Pair experiments...\n")
-
     run_closest_pair_experiments()
-
     print("\nStarting Integer Multiplication experiments...\n")
-
     run_integer_multiplication_experiments()
-
     print("\nAll experiments completed successfully!")
     print("Results saved in the results folder.")
 

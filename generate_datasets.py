@@ -1,76 +1,104 @@
-
 import os
 import random
 
+# Project directories
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-CLOSEST_PAIR_FOLDER = "datasets/closest_pair"
-INTEGER_MULTIPLICATION_FOLDER = "datasets/integer_multiplication"
+CLOSEST_PAIR_DIR = os.path.join(
+    BASE_DIR, "datasets", "closest_pair"
+)
+INTEGER_MULTIPLICATION_DIR = os.path.join(
+    BASE_DIR, "datasets", "integer_multiplication"
+)
+
+# Dataset configuration
+INPUT_SIZES = [200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100]
+RANDOM_SEED = 42
+# Karatsuba operands will have varying digit lengths
+KARATSUBA_DIGIT_SIZES = [110, 120, 130, 140, 150,
+                         160, 170, 180, 190, 200]
+
+# Use a fixed seed for reproducible datasets
+random.seed(RANDOM_SEED)
+
+def create_directories():
+    os.makedirs(CLOSEST_PAIR_DIR, exist_ok=True)
+    os.makedirs(INTEGER_MULTIPLICATION_DIR, exist_ok=True)
 
 
-INPUT_SIZES = [200, 300, 400, 500, 600,
-               700, 800, 900, 1000, 1100]
+def random_integer_with_digits(digits):
+    # Random integer with exactly `digits` digits (first digit is never 0).
+    return random.randint(10 ** (digits - 1), 10 ** digits - 1)
+
 
 def generate_closest_pair_datasets():
-
-    os.makedirs(CLOSEST_PAIR_FOLDER, exist_ok=True)
+    print("\nGenerating Closest Pair datasets...")
 
     for index, size in enumerate(INPUT_SIZES, start=1):
 
-        filename = "cp_" + str(index).zfill(2) + ".txt"
-        filepath = os.path.join(CLOSEST_PAIR_FOLDER, filename)
+        filename = f"cp_{index:02d}.txt"
+        filepath = os.path.join(CLOSEST_PAIR_DIR, filename)
+
+        points = []
+
+        for _ in range(size):
+            x = round(random.uniform(-1000, 1000), 2)
+            y = round(random.uniform(-1000, 1000), 2)
+
+            points.append((x, y))
 
         with open(filepath, "w") as file:
 
-            file.write(str(size) + "\n")
+            file.write(f"{size}\n")
 
-            for i in range(size):
+            for x, y in points:
+                file.write(f"{x} {y}\n")
 
-                x = random.randint(-100000, 100000)
-                y = random.randint(-100000, 100000)
-
-                file.write(str(x) + " " + str(y) + "\n")
-
-        print("Generated: " + filename + " (" + str(size) + " points)")
+        print(f"Created {filename} with {size} points")
 
 
 def generate_integer_multiplication_datasets():
+    print("\nGenerating Karatsuba datasets...")
 
-    os.makedirs(INTEGER_MULTIPLICATION_FOLDER, exist_ok=True)
+    for index, digits in enumerate(KARATSUBA_DIGIT_SIZES, start=1):
 
-    for index, size in enumerate(INPUT_SIZES, start=1):
+        filename = f"im_{index:02d}.txt"
+        filepath = os.path.join(
+            INTEGER_MULTIPLICATION_DIR,
+            filename
+        )
 
-        filename = "im_" + str(index).zfill(2) + ".txt"
-        filepath = os.path.join(INTEGER_MULTIPLICATION_FOLDER, filename)
+        # Generate two integers, each with the required number of digits
+        x = random_integer_with_digits(digits)
+        y = random_integer_with_digits(digits)
 
         with open(filepath, "w") as file:
 
-            first_number = str(random.randint(1, 9))
+            file.write(f"{x}\n")
+            file.write(f"{y}\n")
 
-            for i in range(size - 1):
-                first_number += str(random.randint(0, 9))
-
-            second_number = str(random.randint(1, 9))
-
-            for i in range(size - 1):
-                second_number += str(random.randint(0, 9))
-
-            file.write(first_number + "\n")
-            file.write(second_number + "\n")
-
-        print("Generated: " + filename + " (" + str(size) + "-digit operands)")
+        print(f"Created {filename}: two {digits}-digit integers")
 
 
 def main():
 
-    random.seed(42)
+    print("=" * 50)
+    print("       DAA PROJECT DATASET GENERATOR")
+    print("=" * 50)
 
-    print("Generating Closest Pair datasets...")
+    create_directories()
+
     generate_closest_pair_datasets()
 
-    print("\nGenerating Integer Multiplication datasets...")
     generate_integer_multiplication_datasets()
 
-    print("\nAll 20 datasets generated successfully!")
+    print("\n" + "=" * 50)
+    print("All datasets generated successfully!")
+    print(f"Closest Pair datasets: {len(INPUT_SIZES)}")
+    print(f"Karatsuba datasets: {len(KARATSUBA_DIGIT_SIZES)}")
+    print(f"Karatsuba operand sizes: {KARATSUBA_DIGIT_SIZES[0]} to "
+          f"{KARATSUBA_DIGIT_SIZES[-1]} digits")
+    print("=" * 50)
 
 
 if __name__ == "__main__":
